@@ -28,7 +28,7 @@ export default async function Home() {
   return (
     <main>
       main page!!!
-      {messages.map((message) => <div>{message.text}</div>)}
+      {messages.map((message) => <div>{message.user}:{message.text}</div>)}
     </main>
   )
 }

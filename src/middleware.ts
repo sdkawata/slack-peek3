@@ -5,7 +5,6 @@ import { SESSION_COOKIE_NAME, seal } from './app/session';
 export const runtime = 'nodejs'
  
 export async function middleware(request: NextRequest) {
-  console.log('middleware', request.url)
   const code = request.nextUrl.searchParams.get('code')
   if (code) {
     const form = new FormData()
