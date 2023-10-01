@@ -48,7 +48,7 @@ const fetchMessage = async () => {
   for await (const page of web.paginate('users.list')) {
      users.push(...(page.members as User[]))
   }
-  const targetChannels = channels.filter(channel => channel.is_channel && /times_/.test(channel.name))
+  const targetChannels = channels.filter(channel => channel.is_channel && /^times/.test(channel.name))
   const historyResponses = await Promise.all(targetChannels.map(channel => web.conversations.history({channel: channel.id}))) as ChannelHistoryResponse[]
   // console.log(historyResponses)
   const messages = historyResponses
