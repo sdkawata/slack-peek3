@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server'
 import { SESSION_COOKIE_NAME, seal } from './app/session';
 
 export const runtime = 'nodejs'
+
+const redirectUri = (request: NextRequest) => `https://${request.nextUrl.hostname}/`
  
 export async function middleware(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
@@ -11,7 +13,7 @@ export async function middleware(request: NextRequest) {
     form.append("code", code)
     form.append("client_id", process.env.CLIENT_ID!)
     form.append("client_secret", process.env.CLIENT_SECRET!)
-    const response = await fetch('https://slack.com/api/oauth.v2.access', {
+    const response = await fetch('https://slack.com/api/oauth.v2.access?redirect_uri=${encodeURIComponent(redirectUri(request))}', {
       method: "POST",
       body: form,
     })
@@ -40,8 +42,7 @@ export async function middleware(request: NextRequest) {
       'users:read',
       'search:read',
     ]
-    const redirectUrl = `https://${request.nextUrl.hostname}/`
-    return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUrl)}`))
+    return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri(request))}`))
   }
   return NextResponse.next();
 }
