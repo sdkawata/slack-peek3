@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
       body: form,
     })
     const json = await response.json() as {
+      ok: boolean,
       authed_user: {
         access_token: string
       },
@@ -27,6 +28,9 @@ export async function middleware(request: NextRequest) {
     }
     if (response.status !== 200) {
       throw Error('oauth access api failed')
+    }
+    if (json.ok === false) {
+      throw Error('oauth access api failed reason:' + (json as any).error)
     }
     const nextResponse = NextResponse.redirect(new URL("/", request.url))
     const sealed = await seal({token: json.authed_user.access_token})
