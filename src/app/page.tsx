@@ -68,7 +68,7 @@ const fetchMessage = async () => {
   }
   const targetChannels = channels.filter(channel => channel.is_channel && /^times/.test(channel.name))
   const query = targetChannels.map(channel => `in:${channel.name}`).join(" OR ")
-  const searchResponse = (await web.search.messages({query, count: 1000, sort: 'timestamp', sort_dir: 'desc'})) as unknown as SearchMessagesResponse
+  const searchResponse = (await web.search.messages({query, count: 100, sort: 'timestamp', sort_dir: 'desc'})) as unknown as SearchMessagesResponse
   const messages = searchResponse.messages.matches.map(match => ({
     channelId: match.channel.id,
     channelName: match.channel.name,
