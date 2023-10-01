@@ -127,7 +127,7 @@ export default async function Home() {
   const {channels, users, messages} = await fetchMessage()
   return (
     <main>
-      {messages.map((message) => <Message message={message} users={users} channels={channels}/>)}
+      {messages.map((message) => <Message message={message} users={users} channels={channels} key={`${message.channel}:${message.ts}`}/>)}
     </main>
   )
 }
