@@ -99,7 +99,7 @@ function toHTML(text: string, users: User[]) {
   ])
 }
 
-export function formatTs(message: SlackMessage) {
+function formatTs(message: SlackMessage) {
   return dayjs.unix(parseInt(message.ts.split('.')[0])).format('YYYY-MM-DD HH:mm:ss')
 }
 
