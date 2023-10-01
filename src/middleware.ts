@@ -11,7 +11,6 @@ export async function middleware(request: NextRequest) {
     form.append("code", code)
     form.append("client_id", process.env.CLIENT_ID!)
     form.append("client_secret", process.env.CLIENT_SECRET!)
-    console.log(form)
     const response = await fetch('https://slack.com/api/oauth.v2.access', {
       method: "POST",
       body: form,
@@ -22,6 +21,9 @@ export async function middleware(request: NextRequest) {
       },
     }
     if (! response.ok) {
+      throw Error('oauth access api failed')
+    }
+    if (response.status !== 200) {
       throw Error('oauth access api failed')
     }
     const nextResponse = NextResponse.redirect(new URL("/", request.url))
@@ -36,8 +38,10 @@ export async function middleware(request: NextRequest) {
       'channels:read',
       'channels:history',
       'users:read',
+      'search:read',
     ]
-    return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}`))
+    const redirectUrl = `https://${request.nextUrl.hostname}/`
+    return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}&redirect_url=${encodeURIComponent(redirectUrl)}`))
   }
   return NextResponse.next();
 }

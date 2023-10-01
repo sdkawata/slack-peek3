@@ -24,16 +24,34 @@ type Message = {
   ts: string;
 }
 
-type SlackMessage = Message & {
-  channel:string
+type SlackMessage = {
+  channelId:string,
+  channelName: string,
+  userId: string,
+  userName: string,
+  permalink: string,
+  teamId: string,
+  text: string,
+  ts: string,
 }
 
-type ChannelHistoryResponse = {
-  messages: Message[]
-  has_more: boolean;
+type SearchMessagesResponse = {
+  messages: {
+    
+    matches: {
+      channel: {
+        id: string,
+        name: string,
+      },
+      team:string, 
+      permalink: string,
+      text: string,
+      ts: string,
+      user: string,
+      username: string,
+    }[]
+  }
 }
-
-const tsToNumber = (ts:string) => parseInt(ts.split(".")[0], 10)
 
 const fetchMessage = async () => {
   const {token} = await unseal(cookies().get(SESSION_COOKIE_NAME)!.value)
@@ -49,11 +67,18 @@ const fetchMessage = async () => {
      users.push(...(page.members as User[]))
   }
   const targetChannels = channels.filter(channel => channel.is_channel && /^times/.test(channel.name))
-  const historyResponses = await Promise.all(targetChannels.map(channel => web.conversations.history({channel: channel.id}))) as ChannelHistoryResponse[]
-  // console.log(historyResponses)
-  const messages = historyResponses
-    .flatMap((response, idx) => response.messages.map(message => ({...message, channel: targetChannels[idx].id} satisfies SlackMessage)))
-    .sort((message1, message2) => tsToNumber(message2.ts) - tsToNumber(message1.ts))
+  const query = targetChannels.map(channel => `in:${channel.name}`).join(" OR ")
+  const searchResponse = (await web.search.messages({query, count: 1000, sort: 'timestamp', sort_dir: 'desc'})) as unknown as SearchMessagesResponse
+  const messages = searchResponse.messages.matches.map(match => ({
+    channelId: match.channel.id,
+    channelName: match.channel.name,
+    userId: match.user,
+    userName: match.username,
+    teamId: match.team,
+    text: match.text,
+    ts: match.ts,
+    permalink: match.permalink,
+  } as SlackMessage))
   return {
     messages,
     users,
@@ -105,18 +130,17 @@ function formatTs(message: SlackMessage) {
 
 const Message: React.FC<{message: SlackMessage, users: User[], channels: Channel[]}> = ({message, users, channels}) => {
   const time = dayjs.unix(parseInt(message.ts.split('.')[0])).format('YYYY-MM-DD HH:mm:ss')
-  const user = users.find(user => user.id === message.user)
-  const userId = (user ? user.id : message.bot_id) || 'unknown'
-  const userName = (user ? user.name : message.username) || 'unknown'
-  const channel = channels.find(channel => channel.id === message.channel)!
-  const team = users[0].team
-  let link = `slack://channel?team=${team}&id=${message.channel}&message=${message.ts}`
-  // const match = message.permalink.match(/thread_ts=([0-9.]+)/)
-  // if (match !== null) {
-  //   link += `&thread_ts=${match[1]}`
-  // }
+  const userId = message.userId
+  const userName = message.userName
+  const channelId = message.channelId
+  const channelName = message.channelName
+  let link = `slack://channel?team=${message.teamId}&id=${message.channelId}&message=${message.ts}`
+  const match = message.permalink.match(/thread_ts=([0-9.]+)/)
+  if (match !== null) {
+    link += `&thread_ts=${match[1]}`
+  }
   return (<div className="odd:bg-slate-100">
-  <span className="font-bold" style={{color: strToColor('ch', channel.id)}}>{channel.name}</span>:
+  <span className="font-bold" style={{color: strToColor('ch', channelId)}}>{channelName}</span>:
   <span className="font-bold" style={{color: strToColor('un', userId)}}>{userName}</span>:
   <span dangerouslySetInnerHTML={{__html: toHTML(message.text, users)}}/>
   <a className="text-xs text-slate-500 ml-2" href={link}>{time}</a>
@@ -127,7 +151,7 @@ export default async function Home() {
   const {channels, users, messages} = await fetchMessage()
   return (
     <main>
-      {messages.map((message) => <Message message={message} users={users} channels={channels} key={`${message.channel}:${message.ts}`}/>)}
+      {messages.map((message) => <Message message={message} users={users} channels={channels} key={`${message.channelId}:${message.ts}`}/>)}
     </main>
   )
 }
