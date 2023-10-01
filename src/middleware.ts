@@ -35,6 +35,7 @@ export async function middleware(request: NextRequest) {
     const scopes = [
       'channels:read',
       'channels:history',
+      'users:read',
     ]
     return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}`))
   }

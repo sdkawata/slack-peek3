@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@slack/web-api": "^6.9.0",
+    "dayjs": "^1.11.10",
     "iron-session": "^6.3.1",
+    "js-sha256": "^0.10.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
