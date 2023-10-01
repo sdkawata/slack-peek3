@@ -88,7 +88,7 @@ function regexMultiReplace(text: string, replaces: [RegExp, (re:RegExpMatchArray
   return rec(text, 0)
 }
 
-export function toHTML(text: string, users: User[]) {
+function toHTML(text: string, users: User[]) {
   return regexMultiReplace(text, [
     [/<(https?:\/\/[^>|]+)\|([^>]+)>/g, (m) => `<a href=${m[1]}>${m[2]}</a>`],
     [/<(https?:\/\/[^>|]+)>/g, (m) => `<a href=${m[1]}>${m[1]}</a>`],
