@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
       'search:read',
     ]
     const redirectUrl = `https://${request.nextUrl.hostname}/`
-    return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}&redirect_url=${encodeURIComponent(redirectUrl)}`))
+    return NextResponse.redirect(new URL(`https://slack.com/oauth/v2/authorize?user_scope=${scopes.join(',')}&client_id=${process.env.CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUrl)}`))
   }
   return NextResponse.next();
 }
