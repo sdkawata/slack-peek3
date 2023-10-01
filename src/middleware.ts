@@ -13,7 +13,8 @@ export async function middleware(request: NextRequest) {
     form.append("code", code)
     form.append("client_id", process.env.CLIENT_ID!)
     form.append("client_secret", process.env.CLIENT_SECRET!)
-    const response = await fetch('https://slack.com/api/oauth.v2.access?redirect_uri=${encodeURIComponent(redirectUri(request))}', {
+    form.append("redirect_uri", redirectUri(request))
+    const response = await fetch('https://slack.com/api/oauth.v2.access', {
       method: "POST",
       body: form,
     })
