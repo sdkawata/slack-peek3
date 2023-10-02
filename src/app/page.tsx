@@ -5,7 +5,6 @@ import { Message } from './Message';
 import { Channel, SearchMessagesResponse, SlackMessage, User } from './type';
 import { Suspense } from 'react';
 
-
 const fetchMessage = async () => {
   const {token} = await unseal(cookies().get(SESSION_COOKIE_NAME)!.value)
   const web = new WebClient(token)

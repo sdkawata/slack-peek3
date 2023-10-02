@@ -47,7 +47,7 @@ function toHTML(text: string, users: User[]) {
 }
 
 export const Message: React.FC<{message: SlackMessage, users: User[], channels: Channel[]}> = ({message, users, channels}) => {
-  const time = dayjs.unix(parseInt(message.ts.split('.')[0])).format('YYYY-MM-DD HH:mm:ss')
+  const time = dayjs.unix(parseInt(message.ts.split('.')[0])).tz().format('YYYY-MM-DD HH:mm:ss')
   const userId = message.userId
   const userName = message.userName
   const channelId = message.channelId
