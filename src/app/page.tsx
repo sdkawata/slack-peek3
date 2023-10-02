@@ -3,6 +3,7 @@ import { SESSION_COOKIE_NAME, unseal } from "./session";
 import {WebClient} from '@slack/web-api'
 import { Message } from './Message';
 import { Channel, SearchMessagesResponse, SlackMessage, User } from './type';
+import { Suspense } from 'react';
 
 
 const fetchMessage = async () => {
@@ -38,12 +39,15 @@ const fetchMessage = async () => {
   }
 }
 
-
-export default async function Home() {
+export async function HomeContent() {
   const {channels, users, messages} = await fetchMessage()
   return (
     <main>
       {messages.map((message) => <Message message={message} users={users} channels={channels} key={`${message.channelId}:${message.ts}`}/>)}
     </main>
   )
+}
+
+export default function Home() {
+  return <Suspense fallback={<>loading...</>}><HomeContent/></Suspense>
 }
