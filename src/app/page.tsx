@@ -38,7 +38,7 @@ const fetchMessage = async () => {
   }
 }
 
-export async function HomeContent() {
+async function HomeContent() {
   const {channels, users, messages} = await fetchMessage()
   return (
     <main>
