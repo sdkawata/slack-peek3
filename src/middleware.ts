@@ -4,7 +4,7 @@ import { SESSION_COOKIE_NAME, seal } from './app/session';
 
 export const runtime = 'nodejs'
 
-const redirectUri = (request: NextRequest) => `https://${request.nextUrl.hostname}/`
+const redirectUri = (request: NextRequest) => process.env.REDIRECT_URI || `https://${request.nextUrl.hostname}/`
  
 export async function middleware(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
