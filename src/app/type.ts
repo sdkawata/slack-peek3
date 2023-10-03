@@ -44,6 +44,9 @@ export type SearchMessagesResponse = {
       ts: string,
       user: string,
       username: string,
+      attachments? : {
+        fallback?: string
+      }[]
     }[]
   }
 }

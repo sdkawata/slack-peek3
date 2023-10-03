@@ -21,16 +21,20 @@ const fetchMessage = async () => {
   const targetChannels = channels.filter(channel => channel.is_channel && /^times/.test(channel.name))
   const query = targetChannels.map(channel => `in:${channel.name}`).join(" OR ")
   const searchResponse = (await web.search.messages({query, count: 100, sort: 'timestamp', sort_dir: 'desc'})) as unknown as SearchMessagesResponse
-  const messages = searchResponse.messages.matches.map(match => ({
-    channelId: match.channel.id,
-    channelName: match.channel.name,
-    userId: match.user,
-    userName: match.username,
-    teamId: match.team,
-    text: match.text,
-    ts: match.ts,
-    permalink: match.permalink,
-  } as SlackMessage))
+  
+  const messages = searchResponse.messages.matches.map(match => {
+    const text = (match.text === '' || match.text === null) && match.attachments && match.attachments[0].fallback ? match.attachments[0].fallback : match.text;
+    return {
+      channelId: match.channel.id,
+      channelName: match.channel.name,
+      userId: match.user,
+      userName: match.username,
+      teamId: match.team,
+      text: text,
+      ts: match.ts,
+      permalink: match.permalink,
+    } as SlackMessage
+  })
   return {
     messages,
     users,
