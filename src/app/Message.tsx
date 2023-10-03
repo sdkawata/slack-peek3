@@ -25,8 +25,8 @@ function regexMultiReplace(text: string, replaces: [RegExp, (re:RegExpMatchArray
       if (m=== null) {
         break;
       }
-      // results.push(rec(s.slice(last, m.index), p+1))
-      // results.push(f(m))
+      results.push(rec(s.slice(last, m.index), p+1))
+      results.push(f(m))
       last = re.lastIndex
     }
     results.push(rec(s.slice(last), p+1))
@@ -37,8 +37,8 @@ function regexMultiReplace(text: string, replaces: [RegExp, (re:RegExpMatchArray
 
 function toHTML(text: string, users: User[]) {
   return regexMultiReplace(text, [
-    [/<(https?:\/\/[^>|]+)\|([^>]+)>/g, (m) => `<a href=${m[1]}>${m[2]}</a>`],
-    [/<(https?:\/\/[^>|]+)>/g, (m) => `<a href=${m[1]}>${m[1]}</a>`],
+    [/<(https?:\/\/[^>|]+)\|([^>]+)>/g, (m) => `<a href=${m[1]} target="_blank">${m[2]}</a>`],
+    [/<(https?:\/\/[^>|]+)>/g, (m) => `<a href=${m[1]} target="_blank">${m[1]}</a>`],
     [/<@([0-9A-Za-z]+)>/g, (m) => {const user = users.find((user) => user.id === m[1]); return user ? `<@${user.name}>` : m[0]}],
     [/\r?\n/g, (m) => '<br>'],
     [/<|>/g, (m) => ({'<': '&lt;', '>': '&gt'}[m[0]]!)],
