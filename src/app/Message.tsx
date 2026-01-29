@@ -38,7 +38,7 @@ function regexMultiReplace(text: string, replaces: [RegExp, (re:RegExpMatchArray
 function toHTML(text: string, users: User[]) {
   return regexMultiReplace(text, [
     [/<(https?:\/\/[^>|]+)\|([^>]+)>/g, (m) => `<a href=${m[1]} target="_blank">${m[2]}</a>`],
-    [/<(https?:\/\/[^>|]+)>/g, (m) => `<a href=${m[1]} target="_blank">${m[1]}</a>`],
+    [/<(https?:\/\/[^>|]+)\|?>/g, (m) => `<a href=${m[1]} target="_blank">${m[1]}</a>`],
     [/<@([0-9A-Za-z]+)>/g, (m) => {const user = users.find((user) => user.id === m[1]); return user ? `<@${user.name}>` : m[0]}],
     [/\r?\n/g, (m) => '<br>'],
     [/<|>/g, (m) => ({'<': '&lt;', '>': '&gt'}[m[0]]!)],
